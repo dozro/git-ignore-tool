@@ -41,6 +41,9 @@ func ignore(workdir, gitExecPath string, nocreate, nocommit *bool, ignore []stri
 		if err != nil {
 			log.Fatalf("Error committing gitignore: %v", err)
 		}
+		if err = gitignore.UntrackFiles(ignore, gitExecPath, *nocommit, *nocommit, false); err != nil {
+			log.Fatalf("Error untracking files: %v", err)
+		}
 	}
 	log.Infof("Added gitignore to %s", commonStrings.GitignoreFileName)
 }
