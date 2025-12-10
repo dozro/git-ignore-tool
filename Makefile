@@ -3,20 +3,27 @@ PREFIX  ?= /usr/local
 BINDIR  := $(PREFIX)/bin
 
 # Project files
-TARGETGITITGNORE  := git-ignore
+TARGET := git-ignore-tool
 
 .Phony: all clean build
 
-all: $(TARGETGITITGNORE)
+all: $(TARGET)
 build: all
 clean:
-	rm git-ignore
-$(TARGETGITITGNORE):
-	go build -o git-ignore ./cmd/git-ignore/main.go ./cmd/git-ignore/ignore.go
+	rm $(TARGET)
+$(TARGET):
+	go build -o $(TARGET) ./cmd/git-ignore/main.go ./cmd/git-ignore/ignore.go ./cmd/git-ignore/unignore.go ./cmd/git-ignore/untrack-ignored.go
+
 
 install: $(TARGET)
 	install -d $(DESTDIR)$(BINDIR)
-	install -m 755 $(TARGETGITITGNORE) $(DESTDIR)$(BINDIR)/
+	install -m 755 $(TARGET) $(DESTDIR)$(BINDIR)/
+	ln -s $(DESTDIR)$(BINDIR)/$(TARGET) $(DESTDIR)$(BINDIR)/git-ignore
+	ln -s $(DESTDIR)$(BINDIR)/$(TARGET) $(DESTDIR)$(BINDIR)/git-unignore
+	ln -s $(DESTDIR)$(BINDIR)/$(TARGET) $(DESTDIR)$(BINDIR)/git-untrack-ignored
 
 uninstall:
-	rm -f $(DESTDIR)$(BINDIR)/$(TARGETGITITGNORE)
+	rm -f $(DESTDIR)$(BINDIR)/$(TARGET)
+	rm -f $(DESTDIR)$(BINDIR)/git-ignore
+	rm -f $(DESTDIR)$(BINDIR)/git-unignore
+	rm -f $(DESTDIR)$(BINDIR)/git-untrack-ignored
