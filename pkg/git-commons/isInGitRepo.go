@@ -1,22 +1,67 @@
 package git_commons
 
 import (
-	"errors"
-	"fmt"
+	"context"
 	"os"
-
-	log "github.com/sirupsen/logrus"
+	"path/filepath"
+	"sync"
 )
 
 func IsGitRepo(basePath string) bool {
-	if _, err := os.Stat(fmt.Sprintf("%s/.git", basePath)); err == nil {
-		return true
+	dirs := parentDirs(basePath)
 
-	} else if errors.Is(err, os.ErrNotExist) {
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
+	checkChan := make(chan bool, 1)
+	var wg sync.WaitGroup
+
+	for _, dir := range dirs {
+		wg.Add(1)
+		go func(d string) {
+			defer wg.Done()
+			isAGitRepo(ctx, checkChan, d, cancel)
+		}(dir)
+	}
+
+	go func() {
+		wg.Wait()
+		close(checkChan)
+	}()
+
+	select {
+	case <-checkChan:
+		return true
+	case <-ctx.Done():
 		return false
-	} else {
-		// Schrodinger: file may or may not exist. See err for details.
-		log.Debugf("Error checking if in git repo: %v", err)
-		return false
+	}
+}
+
+func parentDirs(path string) []string {
+	var parents []string
+
+	for {
+		parent := filepath.Dir(path)
+
+		// stop when we can’t go higher
+		if parent == path {
+			break
+		}
+
+		parents = append(parents, parent)
+		path = parent
+	}
+
+	return parents
+}
+
+func isAGitRepo(ctx context.Context, resultCh chan<- bool, basePath string, cancel context.CancelFunc) {
+	if _, err := os.Stat(filepath.Join(basePath, ".git")); err == nil {
+		select {
+		case <-ctx.Done():
+			return
+		case resultCh <- true:
+			cancel()
+		}
 	}
 }
