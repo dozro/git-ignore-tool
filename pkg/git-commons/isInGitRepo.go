@@ -5,12 +5,13 @@ import (
 	"os"
 	"path/filepath"
 	"sync"
+	"time"
 )
 
 func IsGitRepo(basePath string) bool {
 	dirs := parentDirs(basePath)
 
-	ctx, cancel := context.WithCancel(context.Background())
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Millisecond)
 	defer cancel()
 
 	checkChan := make(chan bool, 1)
