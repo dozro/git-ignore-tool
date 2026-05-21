@@ -1,10 +1,11 @@
 package main
 
 import (
-	"git-ignore/pkg/git-commons"
 	"os"
 	"regexp"
 	"strings"
+
+	"git.gay/zakynthos/go-git-ignore/pkg/git-commons"
 
 	sc "codeberg.org/dozrye/golang_simpleconfig"
 	log "github.com/sirupsen/logrus"

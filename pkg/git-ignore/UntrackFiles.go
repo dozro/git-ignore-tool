@@ -2,8 +2,9 @@ package git_ignore
 
 import (
 	"fmt"
-	gitcommons "git-ignore/pkg/git-commons"
 	"os/exec"
+
+	gitcommons "git.gay/zakynthos/go-git-ignore/pkg/git-commons"
 )
 
 func UntrackFiles(toRemove []string, gitExecPath string, nocommit, commitEachOnItsown, onSepBranch bool) error {

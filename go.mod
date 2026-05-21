@@ -1,4 +1,4 @@
-module git-ignore
+module git.gay/zakynthos/go-git-ignore
 
 go 1.25
 

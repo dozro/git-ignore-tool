@@ -1,8 +1,9 @@
 package git_ignore
 
 import (
-	"git-ignore/internal/pkg/commonStrings"
 	"os"
+
+	"git.gay/zakynthos/go-git-ignore/internal/pkg/commonStrings"
 
 	log "github.com/sirupsen/logrus"
 )

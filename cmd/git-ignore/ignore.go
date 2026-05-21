@@ -1,10 +1,12 @@
 package main
 
 import (
-	"git-ignore/internal/pkg/commonStrings"
-	git_commons "git-ignore/pkg/git-commons"
-	gitignore "git-ignore/pkg/git-ignore"
 	"os"
+
+	gitcommons "git.gay/zakynthos/go-git-ignore/pkg/git-commons"
+	gitignore "git.gay/zakynthos/go-git-ignore/pkg/git-ignore"
+
+	"git.gay/zakynthos/go-git-ignore/internal/pkg/commonStrings"
 
 	log "github.com/sirupsen/logrus"
 )
@@ -33,11 +35,11 @@ func ignore(workdir, gitExecPath string, nocreate, nocommit *bool, ignore []stri
 		log.Fatalf("Error closing gitignore: %v", err)
 	}
 	if !*nocommit {
-		err = git_commons.AddToTracking(gitExecPath, commonStrings.GitignoreFileName)
+		err = gitcommons.AddToTracking(gitExecPath, commonStrings.GitignoreFileName)
 		if err != nil {
 			log.Fatalf("Error adding gitignore: %v", err)
 		}
-		err = git_commons.Commit(gitExecPath, commonStrings.GitignoreFileName, buildGitCommitMsgAfterIgnore(ignore))
+		err = gitcommons.Commit(gitExecPath, commonStrings.GitignoreFileName, buildGitCommitMsgAfterIgnore(ignore))
 		if err != nil {
 			log.Fatalf("Error committing gitignore: %v", err)
 		}

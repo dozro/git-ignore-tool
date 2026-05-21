@@ -1,9 +1,10 @@
 package main
 
 import (
-	"git-ignore/internal/pkg/commonStrings"
-	gitignore "git-ignore/pkg/git-ignore"
 	"os"
+
+	"git.gay/zakynthos/go-git-ignore/internal/pkg/commonStrings"
+	gitignore "git.gay/zakynthos/go-git-ignore/pkg/git-ignore"
 
 	log "github.com/sirupsen/logrus"
 )

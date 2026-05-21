@@ -2,9 +2,10 @@ package git_ignore
 
 import (
 	"fmt"
-	"git-ignore/internal/pkg/commonStrings"
 	"os"
 	"regexp"
+
+	"git.gay/zakynthos/go-git-ignore/internal/pkg/commonStrings"
 
 	log "github.com/sirupsen/logrus"
 )
