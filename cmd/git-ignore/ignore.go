@@ -12,6 +12,15 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
+type IgnoreArgs struct {
+	Workdir        *string
+	GitExec        *string
+	NoCreate       *bool
+	NoCommit       *bool
+	NoCoAuthor     *bool
+	IgnorePatterns []string
+}
+
 func ignore(args IgnoreArgs) {
 	var file *os.File
 	if gitignore.FileExists(commonStrings.GitignoreFileName) {
