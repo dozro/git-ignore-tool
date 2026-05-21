@@ -1,34 +1,20 @@
 package commonStrings
 
 import (
+	_ "embed"
 	"fmt"
-	"runtime/debug"
-	"strings"
 )
 
-var (
-	GitTag    string
-	GitCommit string
-	BuildDate string
-)
+//go:generate go run ./scripts/version.go
+//go:embed .generated-version-tag.txt
+var GitTag string
 
-func fallBack() {
-	if strings.TrimSpace(GitTag) != "" || strings.TrimSpace(GitCommit) != "" {
-		return
-	}
-	info, _ := debug.ReadBuildInfo()
-	for _, setting := range info.Settings {
-		switch setting.Key {
-		case "vcs.revision":
-			GitCommit = setting.Value
-		case "vcs.time":
-			BuildDate = setting.Value
-		}
-	}
-	GitTag = "v0.0.0"
-}
+//go:embed .generated-version-commit.txt
+var GitCommit string
+
+//go:embed .generated-version-build-date.txt
+var BuildDate string
 
 func VersionString() string {
-	fallBack()
-	return fmt.Sprintf("%s (%s, %s, default-build)", GitTag, GitCommit, BuildDate)
+	return fmt.Sprintf("%s (%s, %s)", GitTag, GitCommit, BuildDate)
 }

@@ -12,6 +12,7 @@ build: all
 clean:
 	rm $(TARGET)
 $(TARGET):
+	go generate ./internal/pkg/commonStrings/version.go
 	go build -o $(TARGET) ./cmd/git-ignore/main.go ./cmd/git-ignore/ignore.go ./cmd/git-ignore/unignore.go ./cmd/git-ignore/untrack-ignored.go
 
 
