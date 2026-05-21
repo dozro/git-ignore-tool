@@ -7,7 +7,7 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-func AddToGitIgnore(gitignore *os.File, excludePatterns []string) error {
+func AddUnignoreToGitIgnore(gitignore *os.File, excludePatterns []string) error {
 	existingIgnoreFile, err := ReadGitIgnore(gitignore)
 	if err != nil {
 		return err
@@ -27,13 +27,18 @@ func AddToGitIgnore(gitignore *os.File, excludePatterns []string) error {
 
 	for _, pattern := range excludePatterns {
 		if _, ok := existing[pattern]; ok {
-			log.Infof("Skipping ignore pattern, already exists: %s", pattern)
+			log.Errorf("Is explicitly ignored, pls remove the explicit ignore first: %s", pattern)
 			continue
 		}
 
-		log.Infof("Adding ignore pattern: %s", pattern)
+		if _, ok := existing["!"+pattern]; ok {
+			log.Infof("Is already unignored: %s", pattern)
+			continue
+		}
 
-		_, err := gitignore.WriteString(pattern + "\n")
+		log.Infof("Adding unignore pattern: %s", pattern)
+
+		_, err := gitignore.WriteString("!" + pattern + "\n")
 		if err != nil {
 			return err
 		}

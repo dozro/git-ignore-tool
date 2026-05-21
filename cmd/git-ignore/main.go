@@ -46,7 +46,15 @@ func main() {
 		}
 		ignore(ia)
 	} else if gitUnIgnoreExecNameRegexp.MatchString(calledAs) {
-		unignore(workdir, gitExec, nocreate, nocommit, args)
+		ia := IgnoreArgs{
+			Workdir:        &workdir,
+			GitExec:        &gitExec,
+			NoCreate:       nocreate,
+			NoCommit:       nocommit,
+			NoCoAuthor:     nocoauth,
+			IgnorePatterns: args,
+		}
+		unignore(ia)
 	} else if gitUntrackIgnoredRegexp.MatchString(calledAs) {
 		untrackignored(gitExec, nocommit)
 	} else {
