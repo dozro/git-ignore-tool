@@ -3,6 +3,7 @@ package commonStrings
 import (
 	_ "embed"
 	"fmt"
+	"strings"
 )
 
 //go:generate go run ./scripts/version.go
@@ -16,5 +17,5 @@ var GitCommit string
 var BuildDate string
 
 func VersionString() string {
-	return fmt.Sprintf("%s (%s, %s)", GitTag, GitCommit, BuildDate)
+	return fmt.Sprintf("%s (%s, %s)", strings.TrimSpace(GitTag), strings.TrimSpace(GitCommit), strings.TrimSpace(BuildDate))
 }

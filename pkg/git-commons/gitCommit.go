@@ -58,7 +58,7 @@ func (c *GitCommit) createCommand() (*exec.Cmd, error) {
 		return nil, fmt.Errorf("git not configured")
 	}
 	if c.CoAuthors != nil {
-		comMsg = fmt.Sprintf("%s\n%s", comMsg, c.CoAuthors.CoAuthorsString())
+		comMsg = fmt.Sprintf("%s\n\n%s", comMsg, c.CoAuthors.CoAuthorsString())
 	}
 	return c.Git.createCommand("commit", "-m", comMsg, strings.Join(c.Files, " "))
 }
