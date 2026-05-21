@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"os"
 
 	gitcommons "git.gay/zakynthos/go-git-ignore/pkg/git-commons"
@@ -11,7 +12,7 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-func ignore(workdir, gitExecPath string, nocreate, nocommit *bool, ignore []string) {
+func ignore(args IgnoreArgs) {
 	var file *os.File
 	if gitignore.FileExists(commonStrings.GitignoreFileName) {
 		var err error
@@ -21,12 +22,12 @@ func ignore(workdir, gitExecPath string, nocreate, nocommit *bool, ignore []stri
 		}
 	} else {
 		log.Infof("Gitignore file %s not found, creating it", commonStrings.GitignoreFileName)
-		if *nocreate {
+		if *args.NoCreate {
 			log.Fatalf("Will not create a gitignore if none exists")
 		}
 		file = gitignore.CreateNewGitIgnore(commonStrings.GitignoreFileName)
 	}
-	err := gitignore.AddToGitIgnore(file, ignore)
+	err := gitignore.AddToGitIgnore(file, args.IgnorePatterns)
 	if err != nil {
 		log.Fatalf("Error adding gitignore: %v", err)
 	}
@@ -34,16 +35,35 @@ func ignore(workdir, gitExecPath string, nocreate, nocommit *bool, ignore []stri
 	if err != nil {
 		log.Fatalf("Error closing gitignore: %v", err)
 	}
-	if !*nocommit {
-		err = gitcommons.AddToTracking(gitExecPath, commonStrings.GitignoreFileName)
+	git := gitcommons.Git{
+		GitExec: args.GitExec,
+	}
+	var coAuthor gitcommons.CoAuthor
+	if !*args.NoCoAuthor {
+		coAuthor = gitcommons.CoAuthor{
+			Name:  fmt.Sprintf("Git Ignore (%s)", commonStrings.VersionString()),
+			Email: "git-ignore@cisnt.fyi",
+			IsBot: true,
+		}
+	}
+
+	if !*args.NoCommit {
+		err = gitcommons.AddToTracking(*args.GitExec, commonStrings.GitignoreFileName)
 		if err != nil {
 			log.Fatalf("Error adding gitignore: %v", err)
 		}
-		err = gitcommons.Commit(gitExecPath, commonStrings.GitignoreFileName, buildGitCommitMsgAfterIgnore(ignore))
+		comMsg := buildGitCommitMsgAfterIgnore(args.IgnorePatterns)
+		gitCommit := gitcommons.GitCommit{
+			Git:       &git,
+			Files:     []string{commonStrings.GitignoreFileName},
+			Message:   &comMsg,
+			CoAuthors: []gitcommons.CoAuthor{coAuthor},
+		}
+		err = gitCommit.Commit()
 		if err != nil {
 			log.Fatalf("Error committing gitignore: %v", err)
 		}
-		if err = gitignore.UntrackFiles(ignore, gitExecPath, *nocommit, *nocommit, false); err != nil {
+		if err = gitignore.UntrackFiles(args.IgnorePatterns, *args.GitExec, *args.NoCommit, *args.NoCommit, false, []gitcommons.CoAuthor{coAuthor}); err != nil {
 			log.Fatalf("Error untracking files: %v", err)
 		}
 	}

@@ -5,8 +5,6 @@ import (
 	"os"
 	"regexp"
 
-	"git.gay/zakynthos/go-git-ignore/internal/pkg/commonStrings"
-
 	log "github.com/sirupsen/logrus"
 )
 
@@ -33,7 +31,7 @@ func AddToGitIgnore(gitignore *os.File, excludePatterns []string) error {
 			continue
 		}
 		log.Infof("Adding ignore pattern: %s", pattern)
-		ignoreStr := fmt.Sprintf("\n%s\n%s\n", commonStrings.GitignoreComment, pattern)
+		ignoreStr := fmt.Sprintf("\n%s\n", pattern)
 		_, err = gitignore.WriteString(ignoreStr)
 		if err != nil {
 			return err

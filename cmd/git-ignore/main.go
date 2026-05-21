@@ -26,6 +26,7 @@ func main() {
 	sch.Init("GitIgnore", true, true, true, nil)
 	nocreate := sch.GetBooleanOption(sc.ConfigEntry{Key: "NOCREATE", Description: "don't create a gitignore if none exists", DefaultBool: false})
 	nocommit := sch.GetBooleanOption(sc.ConfigEntry{Key: "NOCOMMIT", Description: "don't commit a gitignore", DefaultBool: false})
+	nocoauth := sch.GetBooleanOption(sc.ConfigEntry{Key: "NOCOAUTHOTHOR", Description: "don't add the co-author string to the git commit", DefaultBool: false})
 	sch.ParseFlags()
 	args := sch.GetCMDArgs(25)
 	if err != nil {
@@ -35,7 +36,15 @@ func main() {
 		log.Fatalf("%s is not a git repo", workdir)
 	}
 	if gitIgnoreExecNameRegexp.MatchString(calledAs) {
-		ignore(workdir, gitExec, nocreate, nocommit, args)
+		ia := IgnoreArgs{
+			Workdir:        &workdir,
+			GitExec:        &gitExec,
+			NoCreate:       nocreate,
+			NoCommit:       nocommit,
+			NoCoAuthor:     nocoauth,
+			IgnorePatterns: args,
+		}
+		ignore(ia)
 	} else if gitUnIgnoreExecNameRegexp.MatchString(calledAs) {
 		unignore(workdir, gitExec, nocreate, nocommit, args)
 	} else if gitUntrackIgnoredRegexp.MatchString(calledAs) {

@@ -4,12 +4,18 @@ import (
 	"os"
 
 	"git.gay/zakynthos/go-git-ignore/internal/pkg/commonStrings"
+	gitcommons "git.gay/zakynthos/go-git-ignore/pkg/git-commons"
 	gitignore "git.gay/zakynthos/go-git-ignore/pkg/git-ignore"
 
 	log "github.com/sirupsen/logrus"
 )
 
 func untrackignored(gitExecPath string, nocommit *bool) {
+	coAuthor := gitcommons.CoAuthor{
+		Name:  "Git Ignore",
+		Email: "git-ignore@cisnt.fyi",
+		IsBot: true,
+	}
 	var file *os.File
 	if gitignore.FileExists(commonStrings.GitignoreFileName) {
 		var err error
@@ -25,7 +31,7 @@ func untrackignored(gitExecPath string, nocommit *bool) {
 	if err != nil {
 		log.Fatalf("Error reading gitignore: %v", err)
 	}
-	if err := gitignore.UntrackFiles(ignores, gitExecPath, *nocommit, *nocommit, true); err != nil {
+	if err := gitignore.UntrackFiles(ignores, gitExecPath, *nocommit, *nocommit, true, []gitcommons.CoAuthor{coAuthor}); err != nil {
 		log.Fatalf("Error untracking files: %v", err)
 	}
 }
